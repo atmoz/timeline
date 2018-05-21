@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	gtk.Init(nil)
+
 	usage := `Timeline - a linear countdown timer
 
 Usage:
@@ -24,8 +26,8 @@ Options:
   --dock-bottom  Docked to the bottom edge (default)
   --dock-left    Docked to the left edge
   --dock-right   Docked to the right edge
-  --width=<px>   Width in pixels of window in normal mode [default: 1000]
-  --height=<px>  Height in pixels of window in normal mode [default: 7]
+  --width=<px>   Width in pixels of window in normal mode, 0=100% [default: 0]
+  --height=<px>  Height in pixels of window in normal mode, 0=100% [default: 7]
   --update=<ms>  Update delay in milliseconds [default: 1000]`
 
 	args, _ := docopt.ParseDoc(usage)
@@ -88,6 +90,10 @@ Options:
 		argWidth = gdk.ScreenWidth()
 	}
 
+	if argHeight == 0 {
+		argHeight = gdk.ScreenHeight()
+	}
+
 	if !(argNormal || argFullscreen ||
 		argDockTop || argDockBottom || argDockLeft || argDockRight) {
 		argDockBottom = true
@@ -101,7 +107,6 @@ Options:
 		step *= -1
 	}
 
-	gtk.Init(nil)
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("Timeline")
 	window.Connect("destroy", gtk.MainQuit)
